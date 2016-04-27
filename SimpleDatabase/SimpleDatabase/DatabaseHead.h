@@ -37,7 +37,7 @@ struct RecordInfo
 	int age;
 	bool operator < (const RecordInfo &data) const
 	{
-	
+		return socialSecNum.size() < data.socialSecNum.size();
 	}
 }theRecs;
 
@@ -53,10 +53,10 @@ public:
 	void displayPartRecord();
 	void addRecord();
 	void search();
-	void searchSSN(vector<RecordInfo> &myRecs,  char *key);
+	void searchSSN(vector<RecordInfo> &myRecs,  string key);
 	void deleteRecord();
 	long countRecords();
-	bool cmpSSN(RecordInfo lhs, RecordInfo rhs);
+	bool cmpSSN(RecordInfo const& lhs, RecordInfo const& rhs);
 	
 private:
 	FILE *myFile;
@@ -126,9 +126,9 @@ void MiniDataBase::getInput()
 
 }
 
-bool MiniDataBase::cmpSSN(RecordInfo lhs, RecordInfo rhs)
+bool MiniDataBase::cmpSSN(RecordInfo const& lhs, RecordInfo const& rhs)
 {
-	return lhs.socialSecNum < rhs.socialSecNum;
+	return lhs.socialSecNum.size() < rhs.socialSecNum.size();
 }
 
 void MiniDataBase::search()
@@ -136,13 +136,12 @@ void MiniDataBase::search()
 	countRecords();
 	long recordNum = countRecords();
 	const int nameLength = 20;
-	bool yes;
 	RecordInfo *s;
 	s = new RecordInfo[recordNum];
 	string searchSocial;
-	//cout << "Please enter a Social Security Number to search for (in the format xxx-xx-xxxx): ";
-	//cin >> searchSocial;
-	//myFile = fopen("MiniDataBase.bin", "rb");
+	cout << "Please enter a Social Security Number to search for (in the format xxx-xx-xxxx): ";
+	cin >> searchSocial;
+	myFile = fopen("MiniDataBase.bin", "rb");
 	string fileName = "MiniDataBase.bin";
 	ifstream fin(fileName.c_str(), ios::binary);
 	
@@ -153,22 +152,32 @@ void MiniDataBase::search()
 		i++;
 	}
 
-	//recs.push_back(RecordInfo());
-	//for (int i = 0; i < recordNum; i++)
-	//{
-	//	recs[i].ID = s[i].ID;
-	//	strcpy(recs[i].firstName, s[i].firstName);
-	//	strcpy(recs[i].lastName, s[i].lastName);
-	//	strcpy(recs[i].socialSecNum, s[i].socialSecNum);
-	//	recs[i].salary = s[i].salary;
-	//	recs[i].age = s[i].age;
-	//	recs.push_back(RecordInfo());
-	//}
+	recs.push_back(RecordInfo());
+	for (int i = 0; i < recordNum; i++)
+	{
+		recs[i].ID = s[i].ID;
+		strcpy(recs[i].firstName, s[i].firstName);
+		strcpy(recs[i].lastName, s[i].lastName);
+		recs[i].socialSecNum = s[i].socialSecNum;
+		recs[i].salary = s[i].salary;
+		recs[i].age = s[i].age;
+		recs.push_back(RecordInfo());
+	}
 
+	/*for (int j = 0; j < recs.size(); j++)
+	{
+		cout << recs[j].ID << endl;
+		cout << recs[j].firstName << endl;
+		cout << recs[j].lastName << endl;
+		cout << recs[j].socialSecNum << endl;
+		cout << recs[j].salary << endl;
+		cout << recs[j].age << endl;
+	}*/
+
+
+	sort(recs.begin(), recs.end());
 	
-	//sort(recs.begin(), recs.end());
-	
-	
+	/*
 		for (int j = 0; j < recordNum; j++)
 		{
 			cout << s[j].ID << endl;
@@ -178,66 +187,35 @@ void MiniDataBase::search()
 			cout << s[j].salary << endl;
 			cout << s[j].age << endl;
 			cout << endl << endl;
-		}
+		}*/
 	
-	
-	//sort(s, s + 18, &MiniDataBase::cmpSSN);
-	
-	//for (int i = 0; i < 17; i++)
-	//{
-	//	for (int j = 0; j < 17 - i; j++)
-	//	{
-	//		if (strcmp(s[j].socialSecNum, s[j + 1].socialSecNum) > 0)
-	//		{
-	//			temp = s[j];
-	//			s[j] = s[j + 1];
-	//			s[j + 1] = temp;
-	//		}
-	//	}
-	//}
 
-	//searchSSN(s, searchSocial);
+	searchSSN(recs, searchSocial);
 
 }
 
-void MiniDataBase::searchSSN(vector<RecordInfo> &myRecs, char *key)
+void MiniDataBase::searchSSN(vector<RecordInfo> &myRecs, string key)
 {
-	RecordInfo left_el;
-	RecordInfo right_el;
-	RecordInfo middle_el;
-
-	int SIZE = myRecs.size();
-	int left = 0;
-	int right = SIZE - 1;
-	int middle = (left + right) / 2;
-
-	left_el = myRecs[left];
-	right_el = myRecs[right];
-	middle_el = myRecs[middle];
-
-	bool found = false;
-
-	while (found = false)
+	
+	int start = 0;
+	int end = myRecs.size() + 1;
+	while (start < end)
 	{
-		if (key < middle_el.socialSecNum)
+		int middle = (start + end) / 2;
+		int comp = myRecs[middle].socialSecNum.compare(key);
+		if (comp < 0)
 		{
-			right = middle;
-			middle = (left + right) / 2;
-			left_el = myRecs[left];
-			right_el = myRecs[right];
-			middle_el = myRecs[middle];
+			start = middle + 1;
 		}
-		else if(key > middle_el.socialSecNum)
+		else if (comp > 0)
 		{
-			left = middle;
-			left_el = myRecs[left];
-			right_el = myRecs[right];
-			middle_el = myRecs[middle];
-
+			end = middle;
+				
 		}
-		else if (key == middle_el.socialSecNum)
+		else
 		{
 			cout << "SSN found!\n";
+			return;
 		}
 	}
 

@@ -12,12 +12,12 @@ int main()
 	int count = 0;
 	test.countRecords();
 	
-	test.getInput();
+	//test.getInput();
 		//count++;
 	
 	
 
-	//test.search();
+	test.search();
 
 	cout << "Done\n";
 	getchar();
