@@ -5,7 +5,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <algorithm>
-#include <string> 
+#include <string>
 #include <vector>
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
@@ -31,7 +31,7 @@ struct RecordInfo
 {
 	int ID;
 	char firstName[FIRST_NAME_SIZE];
-	char lastName[LAST_NAME_SIZE];	
+	char lastName[LAST_NAME_SIZE];
 	string socialSecNum;
 	float salary;
 	int age;
@@ -41,8 +41,6 @@ struct RecordInfo
 	}
 }theRecs;
 
-
-
 class MiniDataBase
 {
 public:
@@ -50,80 +48,71 @@ public:
 	~MiniDataBase();
 	void createFile();
 	void getInput();
-	void displayPartRecord();
+	void indexRecords();
 	void addRecord();
 	void search();
-	void searchSSN(vector<RecordInfo> &myRecs,  string key);
+	void searchSSN(vector<RecordInfo> &myRecs, string key);
 	void deleteRecord();
 	long countRecords();
 	bool cmpSSN(RecordInfo const& lhs, RecordInfo const& rhs);
-	
+
 private:
 	FILE *myFile;
 	struct RecordInfo temp;
 	vector<RecordInfo> recs;
-
-	
-
 }; MiniDataBase mnb_Obj;
 
 MiniDataBase::MiniDataBase()
 {
-	
 }
 
 MiniDataBase::~MiniDataBase()
 {
-
-}	
+}
 
 void MiniDataBase::createFile()
 {
 	char ch = 'y';
 	myFile = fopen("MiniDataBase.bin", "wb");
-	while(ch == 'y' || ch == 'Y')
+	while (ch == 'y' || ch == 'Y')
 	{
-		
 	}
 }
 
 void MiniDataBase::getInput()
 {
-		RecordInfo p;
-		//myFile = fopen("MiniDataBase.bin", "ab+");
-		fstream aFile;
-		aFile.open("MiniDataBase.bin", ios::app | ios::binary);
-		if(!aFile)
-		{
-			cout << "Could not open file. " << endl;
-			return;
-		}
-		else if (countRecords() == 12)
-		{
-			cout << "You can only have 12 records in the database: \n";
-			return;
-		}
-		else
-		{
-			p.ID = rand() % 999999;
-			cout << "Random ID tag: " << p.ID << " created." << endl;
-			cout << "Please enter a first name: ";
-			cin >> p.firstName;
-			cout << "Please enter a last name: ";
-			cin >> p.lastName;
-			cout << "Please enter social security number (in the format xxx-xx-xxxx): ";
-			cin >> p.socialSecNum;
-			cout << "Please enter your salary: ";
-			cin >> p.salary;
-			cout << "Please enter your age: ";
-			cin >> p.age;
-			aFile.write((char *)&p, sizeof(struct RecordInfo));
-			aFile.close();
-			return;
-		}
-	
-	
-
+	RecordInfo p;
+	//myFile = fopen("MiniDataBase.bin", "ab+");
+	fstream aFile;
+	aFile.open("MiniDataBase.bin", ios::app | ios::binary);
+	if (!aFile)
+	{
+		cout << "Could not open file. " << endl;
+		return;
+	}
+	else if (countRecords() == 12)
+	{
+		cout << "You can only have 12 records in the database: \n";
+		return;
+	}
+	else
+	{
+		p.ID = rand() % 999999;
+		cout << "Random ID tag: " << p.ID << " created." << endl;
+		cout << "Please enter a first name: ";
+		cin >> p.firstName;
+		cout << "Please enter a last name: ";
+		cin >> p.lastName;
+		cout << "Please enter social security number (in the format xxx-xx-xxxx): ";
+		cin >> p.socialSecNum;
+		cout << "Please enter your salary: ";
+		cin >> p.salary;
+		cout << "Please enter your age: ";
+		cin >> p.age;
+		aFile.write((char *)&p, sizeof(struct RecordInfo));
+		aFile.close();
+		return;
+	}
 }
 
 bool MiniDataBase::cmpSSN(RecordInfo const& lhs, RecordInfo const& rhs)
@@ -144,10 +133,10 @@ void MiniDataBase::search()
 	myFile = fopen("MiniDataBase.bin", "rb");
 	string fileName = "MiniDataBase.bin";
 	ifstream fin(fileName.c_str(), ios::binary);
-	
+
 	cout << "\n\n";
 	int i = 0;
-	while (fin.read((char *) &s[i], sizeof(RecordInfo)))
+	while (fin.read((char *)&s[i], sizeof(RecordInfo)))
 	{
 		i++;
 	}
@@ -174,9 +163,8 @@ void MiniDataBase::search()
 		cout << recs[j].age << endl;
 	}*/
 
-
 	sort(recs.begin(), recs.end());
-	
+
 	/*
 		for (int j = 0; j < recordNum; j++)
 		{
@@ -188,17 +176,14 @@ void MiniDataBase::search()
 			cout << s[j].age << endl;
 			cout << endl << endl;
 		}*/
-	
 
 	searchSSN(recs, searchSocial);
-
 }
 
 void MiniDataBase::searchSSN(vector<RecordInfo> &myRecs, string key)
 {
-	
 	int start = 0;
-	int end = myRecs.size() + 1;
+	int end = myRecs.size();
 	while (start < end)
 	{
 		int middle = (start + end) / 2;
@@ -210,36 +195,110 @@ void MiniDataBase::searchSSN(vector<RecordInfo> &myRecs, string key)
 		else if (comp > 0)
 		{
 			end = middle;
-				
 		}
 		else
 		{
 			cout << "SSN found!\n";
+			cout << myRecs[middle].ID << endl;
+			cout << myRecs[middle].firstName << endl;
+			cout << myRecs[middle].lastName << endl;
+			cout << myRecs[middle].socialSecNum << endl;
+			cout << myRecs[middle].salary << endl;
+			cout << myRecs[middle].age << endl;
 			return;
 		}
 	}
-
 }
 
+void MiniDataBase::indexRecords()
+{
+	int printView;		//Shall the data be displayed in ascending or descending order?
+	int indexRec;		//Field to be indexed
+	long countRec = countRecords();
 
+	myFile = fopen("MiniDataBase.bin", "rb+");
+	if (!myFile)
+	{
+		printf("Unable to open file!");
+		return;
+	}
+	else
+	{
+		cout << "Please enter the field you want to index\n";
+		cout << "1 for the Social Security Number of each member in the file\n";
+		cout << "2 for the Identification number of each member in the file\n";
+		cout << "3 for the age of each member in the file\n";
+		cout << "4 for the first name of every member in the file\n";
+		cout << "5 for the last name of every member in the file\n";
+		cout << "6 for the salary of every member\n ";
+		cout << "Enter index field: ";
+		cin >> indexRec;
+		while (indexRec > 6 || indexRec < 1)
+		{
+			cout << "That is out of scope. Please enter a correct index: ";
+			cin >> indexRec;
+		}
+
+		cout << "Please enter if you want the daat to be displayed in ascending\nor descending order\n";
+		cout << "0 for ascending\n";
+		cout << "1 for descending\n";
+		cin >> printView;
+		while (printView > 1 || printView < 0)
+		{
+			cout << "That is out of scope. Please enter a correct index: ";
+			cin >> indexRec;
+		}
+		
+		if (indexRec == 1)
+		{
+			if (printView == 1)
+			{
+				
+			}
+			else
+			{
+				
+			}
+
+		}
+		else if (indexRec == 2)
+		{
+
+		}
+		else if (indexRec == 3)
+		{
+
+		}
+		else if (indexRec == 4)
+		{
+
+		}
+		else if(indexRec == 5)
+		{
+
+		}
+		else if (indexRec == 6)
+		{
+			
+		}
+	}
+}
 
 long MiniDataBase::countRecords()
 {
-	long size;	
+	long size;
 	myFile = fopen("MiniDataBase.bin", "rb");
 	if (!myFile)
 	{
 		cout << "Could not open file. " << endl;
 		return 0;
 	}
-	else 
+	else
 	{
-	fseek(myFile, 0, SEEK_END);
-	size = ftell(myFile);
-	long recordSize = size / sizeof(struct RecordInfo);
-	//cout << "Number of records in file: " << recordSize << endl;
-	return recordSize;
+		fseek(myFile, 0, SEEK_END);
+		size = ftell(myFile);
+		long recordSize = size / sizeof(struct RecordInfo);
+		//cout << "Number of records in file: " << recordSize << endl;
+		return recordSize;
 	}
-
 }
-

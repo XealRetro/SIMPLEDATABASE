@@ -6,16 +6,13 @@
 
 int main()
 {
-
 	MiniDataBase test;
 	srand(time(NULL));
 	int count = 0;
 	test.countRecords();
-	
+
 	//test.getInput();
 		//count++;
-	
-	
 
 	test.search();
 
@@ -23,5 +20,4 @@ int main()
 	getchar();
 	getchar();
 	return 0;
-
 }
