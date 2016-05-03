@@ -14,10 +14,11 @@ int main()
 	//test.getInput();
 		//count++;
 
-	test.search();
-
+	//test.search();
+	test.indexRecords();
+	cin.clear();
 	cout << "Done\n";
-	getchar();
+	
 	getchar();
 	return 0;
 }

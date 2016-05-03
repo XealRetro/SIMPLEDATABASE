@@ -7,11 +7,12 @@
 #include <algorithm>
 #include <string>
 #include <vector>
+#include <utility>
 #ifdef _MSC_VER
 #define _CRT_SECURE_NO_WARNINGS
 #define FIRST_NAME_SIZE 20
 #define LAST_NAME_SIZE 20
-#define SSN 12
+
 #endif
 
 using std::fstream;
@@ -26,6 +27,7 @@ using std::sort;
 using std::getline;
 using std::vector;
 using std::binary_search;
+using std::swap;
 
 struct RecordInfo
 {
@@ -55,6 +57,10 @@ public:
 	void deleteRecord();
 	long countRecords();
 	bool cmpSSN(RecordInfo const& lhs, RecordInfo const& rhs);
+
+	void qSortChar(char nameList[], int start, int finish);
+	void qSortNum(float numList[], int start, int finish);
+	void qSortString(string SSN[], int start, int finish);
 
 private:
 	FILE *myFile;
@@ -177,7 +183,9 @@ void MiniDataBase::search()
 			cout << endl << endl;
 		}*/
 
+	delete[] s;
 	searchSSN(recs, searchSocial);
+	
 }
 
 void MiniDataBase::searchSSN(vector<RecordInfo> &myRecs, string key)
@@ -215,6 +223,9 @@ void MiniDataBase::indexRecords()
 	int printView;		//Shall the data be displayed in ascending or descending order?
 	int indexRec;		//Field to be indexed
 	long countRec = countRecords();
+	float *numRecList;
+	char *recList;
+	string *sList;
 
 	myFile = fopen("MiniDataBase.bin", "rb+");
 	if (!myFile)
@@ -233,54 +244,122 @@ void MiniDataBase::indexRecords()
 		cout << "6 for the salary of every member\n ";
 		cout << "Enter index field: ";
 		cin >> indexRec;
+		cin.clear();
 		while (indexRec > 6 || indexRec < 1)
 		{
 			cout << "That is out of scope. Please enter a correct index: ";
 			cin >> indexRec;
+			cin.clear();
 		}
 
 		cout << "Please enter if you want the daat to be displayed in ascending\nor descending order\n";
 		cout << "0 for ascending\n";
 		cout << "1 for descending\n";
 		cin >> printView;
+		cin.ignore();
 		while (printView > 1 || printView < 0)
 		{
 			cout << "That is out of scope. Please enter a correct index: ";
 			cin >> indexRec;
+			cin.ignore();
 		}
-		
+
 		if (indexRec == 1)
 		{
-			if (printView == 1)
+			//read into array here
+			sList = new string[countRec];
+			for (int i = 0; i < countRec; i++)
 			{
-				
+				fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+				sList[i] = theRecs.socialSecNum;
+			}
+
+			//for (int i = 0; i < countRec; i++)
+			//{
+			//	cout << sList[i] << endl;
+			//}
+
+		/*	if (printView == 1)
+			{
 			}
 			else
 			{
-				
-			}
-
+			}*/
 		}
 		else if (indexRec == 2)
 		{
+			numRecList = new float[countRec];
+			for (int i = 0; i < countRec; i++)
+			{
+				fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+				numRecList[i] = theRecs.ID;
+			}
 
+			qSortNum(numRecList, 0, countRec - 1);
+
+			for (int i = 0; i < countRec; i++)
+			{
+				printf("%4.2f\n", numRecList[i]);
+			}
+			delete[] numRecList;
+			fclose(myFile);
 		}
 		else if (indexRec == 3)
 		{
-
+			numRecList = new float[countRec];
 		}
 		else if (indexRec == 4)
 		{
-
+			recList = new char[countRec];
 		}
-		else if(indexRec == 5)
+		else if (indexRec == 5)
 		{
-
+			recList = new char[countRec];
 		}
 		else if (indexRec == 6)
 		{
-			
+			numRecList = new float[countRec];
 		}
+	}
+}
+
+void MiniDataBase::qSortNum(float numList[], int start, int finish)
+{
+	if (start < finish)
+	{
+		int left = start + 1;
+		int right = finish;
+		int p = numList[start];
+
+		while (left < right)
+		{
+			if (numList[left] <= p)
+			{
+				left++;
+			}
+			else if (numList[right] >= p)
+			{
+				right--;
+			}
+			else
+			{
+				swap(numList[left], numList[right]);
+			}
+		}
+
+		if (numList[left] < p)
+		{
+			swap(numList[left], numList[start]);
+			left--;
+		}
+		else
+		{
+			left--;
+			swap(numList[left], numList[start]);
+		}
+
+		qSortNum(numList, start, left);
+		qSortNum(numList, right, finish);
 	}
 }
 
