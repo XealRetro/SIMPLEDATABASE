@@ -249,46 +249,86 @@ void MiniDataBase::indexRecords()
 		{
 			cout << "That is out of scope. Please enter a correct index: ";
 			cin >> indexRec;
-			cin.clear();
-		}
 
+		}
 		cout << "Please enter if you want the daat to be displayed in ascending\nor descending order\n";
 		cout << "0 for ascending\n";
 		cout << "1 for descending\n";
 		cin >> printView;
-		cin.ignore();
 		while (printView > 1 || printView < 0)
 		{
 			cout << "That is out of scope. Please enter a correct index: ";
 			cin >> indexRec;
-			cin.ignore();
 		}
 
 		if (indexRec == 1)
 		{
-			//read into array here
-			sList = new string[countRec];
-			for (int i = 0; i < countRec; i++)
+			/*if (printView == 0)
 			{
-				fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
-				sList[i] = theRecs.socialSecNum;
+				for (int i = 0; i < countRec; i++)
+				{
+					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+					cout << theRecs.socialSecNum << endl;
+				}
+				fclose(myFile);
 			}
+			else
+			{
+				for (int i = countRec; i >= 0; i--)
+				{
+					fseek(myFile, sizeof(struct RecordInfo)*i, SEEK_SET);
+					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+					cout << theRecs.socialSecNum << endl;
+				}
+				fclose(myFile);
+			}*/
+			////read into array here
+			//sList = new string[countRec];
+			//for (int i = 0; i < countRec; i++)
+			//{
+			//	fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+			//	sList[i] = theRecs.socialSecNum;
+			//}
+
+			//qSortString(sList, 0, countRec - 1);
 
 			//for (int i = 0; i < countRec; i++)
 			//{
 			//	cout << sList[i] << endl;
 			//}
 
-		/*	if (printView == 1)
-			{
-			}
-			else
-			{
-			}*/
+			//delete[] sList;
+			//fclose(myFile);
+			
+			return;
 		}
 		else if (indexRec == 2)
 		{
-			numRecList = new float[countRec];
+			
+			if (printView == 0)
+			{
+				for (int i = 0; i < countRec; i++)
+				{
+					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+					cout << theRecs.ID << endl;
+				}
+
+			}
+			else
+			{
+				for (int i = countRec; i >= 0; i--)
+				{
+					fseek(myFile, sizeof(struct RecordInfo)*i, SEEK_SET);
+					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+					cout << theRecs.ID << endl;
+				}
+			}
+			fclose(myFile);
+			return;
+			
+			
+			//Inert 
+			/*numRecList = new float[countRec];
 			for (int i = 0; i < countRec; i++)
 			{
 				fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
@@ -302,7 +342,7 @@ void MiniDataBase::indexRecords()
 				printf("%4.2f\n", numRecList[i]);
 			}
 			delete[] numRecList;
-			fclose(myFile);
+			fclose(myFile);*/
 		}
 		else if (indexRec == 3)
 		{
@@ -310,7 +350,7 @@ void MiniDataBase::indexRecords()
 		}
 		else if (indexRec == 4)
 		{
-			recList = new char[countRec];
+
 		}
 		else if (indexRec == 5)
 		{
@@ -361,6 +401,83 @@ void MiniDataBase::qSortNum(float numList[], int start, int finish)
 		qSortNum(numList, start, left);
 		qSortNum(numList, right, finish);
 	}
+
+}
+
+void MiniDataBase::qSortChar(char nameList[], int start, int finish)
+{
+	int left = start;
+	int right = finish;
+	int piv = start + finish / 2;
+	char pivot = nameList[piv];
+	char temp;
+	while (left < right)
+	{
+		while ((nameList[left] < pivot) && (left < finish))
+		{
+			left++;
+		}
+		while ((pivot < nameList[right]) && (right > start))
+		{
+			right--;
+		}
+
+		if (start < finish)
+		{
+			temp = nameList[left];
+			nameList[left] = nameList[right];
+			nameList[right] = temp;
+			left++;
+			right--;
+		}
+	}
+
+	if (start < right)
+	{
+		qSortChar(nameList, start, right);
+	}
+	if (left < finish)
+	{
+		qSortChar(nameList, left, finish);
+	}
+}
+
+void MiniDataBase::qSortString(string SSN[], int start, int finish)
+{
+	int left = start;
+	int right = finish;
+	string pivot = SSN[start + finish / 2];
+	string temp;
+	while (left < right)
+	{
+		while ((SSN[left].compare(pivot) < 0) && (left < right))
+		{
+			left++;
+		}
+		while ((SSN[right].compare(pivot) > 0) && (right < left))
+		{
+			right--;
+		}
+		if (left <= right)
+		{
+			temp = SSN[left];
+			SSN[left] = SSN[right];
+			SSN[right] = temp;
+			left++;
+			right--;
+		}
+
+	}
+
+	if (start < right)
+	{
+		qSortString(SSN, start, right);
+	}
+	if (left < finish)
+	{
+		qSortString(SSN, left, finish);
+	}
+	
 }
 
 long MiniDataBase::countRecords()

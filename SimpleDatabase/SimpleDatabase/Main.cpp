@@ -4,7 +4,7 @@
 #include "DatabaseHead.h"
 #include <iostream>
 
-int main()
+int main(void)
 {
 	MiniDataBase test;
 	srand(time(NULL));
@@ -16,9 +16,6 @@ int main()
 
 	//test.search();
 	test.indexRecords();
-	cin.clear();
 	cout << "Done\n";
-	
-	getchar();
 	return 0;
 }
