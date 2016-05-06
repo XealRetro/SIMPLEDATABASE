@@ -24,9 +24,7 @@ using std::cin;
 using std::cout;
 using std::endl;
 using std::sort;
-using std::getline;
 using std::vector;
-using std::binary_search;
 using std::swap;
 
 struct RecordInfo
@@ -161,37 +159,37 @@ void MiniDataBase::search()
 
 	/*for (int j = 0; j < recs.size(); j++)
 	{
-		cout << recs[j].ID << endl;
-		cout << recs[j].firstName << endl;
-		cout << recs[j].lastName << endl;
-		cout << recs[j].socialSecNum << endl;
-		cout << recs[j].salary << endl;
-		cout << recs[j].age << endl;
+	cout << recs[j].ID << endl;
+	cout << recs[j].firstName << endl;
+	cout << recs[j].lastName << endl;
+	cout << recs[j].socialSecNum << endl;
+	cout << recs[j].salary << endl;
+	cout << recs[j].age << endl;
 	}*/
 
 	sort(recs.begin(), recs.end());
 
 	/*
-		for (int j = 0; j < recordNum; j++)
-		{
-			cout << s[j].ID << endl;
-			cout << s[j].firstName << endl;
-			cout << s[j].lastName << endl;
-			cout << s[j].socialSecNum << endl;
-			cout << s[j].salary << endl;
-			cout << s[j].age << endl;
-			cout << endl << endl;
-		}*/
+	for (int j = 0; j < recordNum; j++)
+	{
+	cout << s[j].ID << endl;
+	cout << s[j].firstName << endl;
+	cout << s[j].lastName << endl;
+	cout << s[j].socialSecNum << endl;
+	cout << s[j].salary << endl;
+	cout << s[j].age << endl;
+	cout << endl << endl;
+	}*/
 
-	delete[] s;
-	searchSSN(recs, searchSocial);
 	
+	searchSSN(recs, searchSocial);
+	//delete[] s;
 }
 
 void MiniDataBase::searchSSN(vector<RecordInfo> &myRecs, string key)
 {
 	int start = 0;
-	int end = myRecs.size();
+	int end = myRecs.size() - 1;
 	while (start < end)
 	{
 		int middle = (start + end) / 2;
@@ -223,9 +221,11 @@ void MiniDataBase::indexRecords()
 	int printView;		//Shall the data be displayed in ascending or descending order?
 	int indexRec;		//Field to be indexed
 	long countRec = countRecords();
-	float *numRecList;
+	/*float *numRecList;
 	char *recList;
-	string *sList;
+	string *sList;*/
+	RecordInfo *arr;
+	arr = new RecordInfo[countRec];
 
 	myFile = fopen("MiniDataBase.bin", "rb+");
 	if (!myFile)
@@ -235,16 +235,23 @@ void MiniDataBase::indexRecords()
 	}
 	else
 	{
+		string fileName = "MiniDataBase.bin";
+		ifstream fin(fileName.c_str(), ios::binary);
+		int i = 0;
+		while (fin.read((char *)&arr[i], sizeof(RecordInfo)))
+		{
+			i++;
+		}
+
 		cout << "Please enter the field you want to index\n";
 		cout << "1 for the Social Security Number of each member in the file\n";
 		cout << "2 for the Identification number of each member in the file\n";
 		cout << "3 for the age of each member in the file\n";
 		cout << "4 for the first name of every member in the file\n";
 		cout << "5 for the last name of every member in the file\n";
-		cout << "6 for the salary of every member\n ";
+		cout << "6 for the salary of every member\n";
 		cout << "Enter index field: ";
 		cin >> indexRec;
-		cin.clear();
 		while (indexRec > 6 || indexRec < 1)
 		{
 			cout << "That is out of scope. Please enter a correct index: ";
@@ -263,24 +270,42 @@ void MiniDataBase::indexRecords()
 
 		if (indexRec == 1)
 		{
-			/*if (printView == 0)
+			if (printView == 0)
 			{
-				for (int i = 0; i < countRec; i++)
+				for (int j = 0; j < countRec; j++)
 				{
-					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
-					cout << theRecs.socialSecNum << endl;
+					cout << arr[j].socialSecNum << endl;
 				}
 				fclose(myFile);
 			}
 			else
 			{
-				for (int i = countRec; i >= 0; i--)
+				for (int j = countRec - 1; j >= 0; j--)
 				{
-					fseek(myFile, sizeof(struct RecordInfo)*i, SEEK_SET);
-					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
-					cout << theRecs.socialSecNum << endl;
+					cout << arr[j].socialSecNum << endl;
 				}
 				fclose(myFile);
+			}
+			
+
+			/*if (printView == 0)
+			{
+			for (int i = 0; i < countRec; i++)
+			{
+			fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+			cout << theRecs.socialSecNum << endl;
+			}
+			fclose(myFile);
+			}
+			else
+			{
+			for (int i = countRec; i >= 0; i--)
+			{
+			fseek(myFile, sizeof(struct RecordInfo)*i, SEEK_SET);
+			fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+			cout << theRecs.socialSecNum << endl;
+			}
+			fclose(myFile);
 			}*/
 			////read into array here
 			//sList = new string[countRec];
@@ -298,67 +323,144 @@ void MiniDataBase::indexRecords()
 			//}
 
 			//delete[] sList;
-			//fclose(myFile);
-			
+			fclose(myFile);
 			return;
 		}
 		else if (indexRec == 2)
 		{
-			
+
 			if (printView == 0)
 			{
-				for (int i = 0; i < countRec; i++)
+				for (int j = 0; j < countRec; j++)
 				{
-					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
-					cout << theRecs.ID << endl;
+					cout << arr[j].ID << endl;
 				}
-
+				fclose(myFile);
 			}
 			else
 			{
-				for (int i = countRec; i >= 0; i--)
+				for (int j = countRec - 1; j >= 0; j--)
 				{
-					fseek(myFile, sizeof(struct RecordInfo)*i, SEEK_SET);
-					fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
-					cout << theRecs.ID << endl;
+					cout << arr[j].ID << endl;
 				}
+				fclose(myFile);
 			}
-			fclose(myFile);
-			return;
-			
-			
+
+
+			//if (printView == 0)
+			//{
+			//	for (int i = 0; i < countRec; i++)
+			//	{
+			//		fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+			//		cout << theRecs.ID << endl;
+			//	}
+			//	fclose(myFile);
+			//}
+			//else
+			//{
+			//	for (int i = countRec; i >= 0; i--)
+			//	{
+			//		fseek(myFile, sizeof(struct RecordInfo)*i, SEEK_SET);
+			//		fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+			//		cout << theRecs.ID << endl;
+			//	}
+			//}
+			//fclose(myFile);
+			//return;
+
+
 			//Inert 
 			/*numRecList = new float[countRec];
 			for (int i = 0; i < countRec; i++)
 			{
-				fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
-				numRecList[i] = theRecs.ID;
+			fread(&theRecs, sizeof(struct RecordInfo), 1, myFile);
+			numRecList[i] = theRecs.ID;
 			}
 
 			qSortNum(numRecList, 0, countRec - 1);
 
 			for (int i = 0; i < countRec; i++)
 			{
-				printf("%4.2f\n", numRecList[i]);
+			printf("%4.2f\n", numRecList[i]);
 			}
 			delete[] numRecList;
 			fclose(myFile);*/
 		}
 		else if (indexRec == 3)
 		{
-			numRecList = new float[countRec];
+			if (printView == 0)
+			{
+				for (int j = 0; j < countRec; j++)
+				{
+					cout << arr[j].age << endl;
+				}
+				fclose(myFile);
+			}
+			else
+			{
+				for (int j = countRec - 1; j >= 0; j--)
+				{
+					cout << arr[j].age << endl;
+				}
+				fclose(myFile);
+			}
 		}
 		else if (indexRec == 4)
 		{
-
+			if (printView == 0)
+			{
+				for (int j = 0; j < countRec; j++)
+				{
+					cout << arr[j].firstName << endl;
+				}
+				fclose(myFile);
+			}
+			else
+			{
+				for (int j = countRec - 1; j >= 0; j--)
+				{
+					cout << arr[j].firstName << endl;
+				}
+				fclose(myFile);
+			}
 		}
 		else if (indexRec == 5)
 		{
-			recList = new char[countRec];
+			if (printView == 0)
+			{
+				for (int j = 0; j < countRec; j++)
+				{
+					cout << arr[j].lastName << endl;
+				}
+				fclose(myFile);
+			}
+			else
+			{
+				for (int j = countRec - 1; j >= 0; j--)
+				{
+					cout << arr[j].lastName << endl;
+				}
+				fclose(myFile);
+			}
 		}
 		else if (indexRec == 6)
 		{
-			numRecList = new float[countRec];
+			if (printView == 0)
+			{
+				for (int j = 0; j < countRec; j++)
+				{
+					cout << arr[j].salary << endl;
+				}
+				fclose(myFile);
+			}
+			else
+			{
+				for (int j = countRec - 1; j >= 0; j--)
+				{
+					cout << arr[j].salary << endl;
+				}
+				fclose(myFile);
+			}
 		}
 	}
 }
@@ -477,7 +579,7 @@ void MiniDataBase::qSortString(string SSN[], int start, int finish)
 	{
 		qSortString(SSN, left, finish);
 	}
-	
+
 }
 
 long MiniDataBase::countRecords()
